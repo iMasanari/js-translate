@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run build:rollup && npm run build:cp",
-    "build:rollup": "rollup -c",
+    "build:rollup": "npm run build:rollup:client && npm run build:rollup:webworker",
+    "build:rollup:client": "rollup -c --environment BUILD:client",
+    "build:rollup:webworker": "rollup -c --environment BUILD:webworker",
     "build:cp": "npm run build:cp:static && npm run build:cp:wasm",
     "build:cp:static": "cp -r static/ dist/",
     "build:cp:wasm": "cp node_modules/source-map/lib/mappings.wasm dist/mappings.wasm",

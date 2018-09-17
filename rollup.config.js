@@ -5,6 +5,8 @@ import replace from 'rollup-plugin-replace'
 import UglifyES from 'uglify-es'
 import { readFileSync } from 'fs'
 
+const file = process.env.BUILD || 'client'
+
 const loadUglify = () => ({
   resolveId(id) {
     if (id === 'uglify-es') return './uglify-es'
@@ -21,9 +23,9 @@ const loadUglify = () => ({
 })
 
 export default {
-  input: `./src/index.ts`,
+  input: `./${file}/index.ts`,
   output: {
-    file: `./dist/bundle.js`,
+    file: `./dist/${file}.js`,
     format: 'iife',
   },
   plugins: [
@@ -33,4 +35,5 @@ export default {
     nodeResolve(),
     commonjs(),
   ],
+  context: 'void 0'
 }
