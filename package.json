@@ -1,0 +1,31 @@
+{
+  "name": "js-translate",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run build:rollup && npm run build:cp",
+    "build:rollup": "rollup -c",
+    "build:cp": "npm run build:cp:static && npm run build:cp:wasm",
+    "build:cp:static": "cp -r static/ dist/",
+    "build:cp:wasm": "cp node_modules/source-map/lib/mappings.wasm dist/mappings.wasm",
+    "clean": "rm dist/*"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "source-map": "^0.7.3",
+    "uglify-es": "^3.3.9"
+  },
+  "devDependencies": {
+    "@types/uglify-es": "^3.0.0",
+    "rollup": "^0.65.2",
+    "rollup-plugin-alias": "^1.4.0",
+    "rollup-plugin-commonjs": "^9.1.6",
+    "rollup-plugin-node-resolve": "^3.4.0",
+    "rollup-plugin-replace": "^2.0.0",
+    "rollup-plugin-typescript2": "^0.17.0",
+    "typescript": "^3.0.3"
+  }
+}
