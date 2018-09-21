@@ -2,10 +2,12 @@ import typescript from 'rollup-plugin-typescript2'
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
 import replace from 'rollup-plugin-replace'
+import uglify from 'rollup-plugin-uglify-es'
 import UglifyES from 'uglify-es'
 import { readFileSync } from 'fs'
 
 const file = process.env.BUILD || 'client'
+const isProduction = process.env.NODE_ENV === 'puroduction'
 
 const loadUglify = () => ({
   resolveId(id) {
@@ -26,7 +28,7 @@ export default {
   input: `./${file}/index.ts`,
   output: {
     file: `./dist/${file}.js`,
-    format: 'iife',
+    format: file === 'client' ? 'iife' : 'esm',
   },
   plugins: [
     replace({ 'typeof fetch': JSON.stringify('function') }),
@@ -34,6 +36,9 @@ export default {
     typescript(),
     nodeResolve(),
     commonjs(),
+    isProduction && uglify({
+      toplevel: true,
+    })
   ],
   context: 'void 0'
 }
