@@ -25,7 +25,7 @@ body {
 
 .input-wrapper {
   position: relative;
-  overflow: scroll;
+  overflow: auto;
   box-sizing: border-box;
   width: calc(50% - 4px);
   height: calc(100vh - 52px);

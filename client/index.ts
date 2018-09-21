@@ -51,6 +51,11 @@ $mangle.addEventListener('click', doMinify)
 $toplevel.addEventListener('click', doMinify)
 $beautify.addEventListener('click', doMinify)
 
+window.addEventListener('resize', () => {
+  $inputTextarea.style.height = $inputOverlay.clientHeight + 'px'
+  $outputTextarea.style.height = $outputOverlay.clientHeight + 'px'
+})
+
 const getSelectionPosition = ($textarea: HTMLTextAreaElement) => {
   const selection = $textarea.selectionStart
   const lines = $textarea.value.slice(0, selection).split('\n')
