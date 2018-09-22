@@ -1,14 +1,14 @@
-import { NullablePosition, NullableMappedPosition } from 'source-map'
+import { NullablePosition } from 'source-map'
 
 const findTokenIndex = (str: string) => {
-  const reg = /[^a-zA-Z0-9$_]/
+  const char = str[0]
+  const isStringOrRegExpLiteral = char === `'` || char === `"` || char === '`' || char === '/'
 
-  for (let i = 0; i < str.length; i++) {
-    if (reg.test(str[i])) {
-      return i
-    }
-  }
-  return str.length
+  const index = isStringOrRegExpLiteral
+    ? str.indexOf(char, 1) + 1
+    : str.search(/[^a-zA-Z0-9$_]/)
+
+  return index > 0 ? index : str.length
 }
 
 const escapeRegExp = /["&'<>]/g
@@ -26,7 +26,7 @@ const escapeLookup = (match: string) =>
 const escapeHtml = (value: string) =>
   value.replace(escapeRegExp, escapeLookup)
 
-export default (code: string, pos?: NullablePosition | NullableMappedPosition) => {
+export default (code: string, pos?: NullablePosition) => {
   if (!pos || pos.column == null || pos.line == null) {
     return escapeHtml(code) + '\n|'
   }
