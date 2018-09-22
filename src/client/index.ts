@@ -12,7 +12,7 @@ const $mangle = document.getElementById('mangle') as HTMLInputElement
 const $toplevel = document.getElementById('toplevel') as HTMLInputElement
 const $beautify = document.getElementById('beautify') as HTMLInputElement
 
-const work = createWorkPromise<any>(new Worker('webworker.js'))
+const work = createWorkPromise<any>(new Worker('./bundle.webworker.js'))
 
 const doMinify = async () => {
   const result = await work('minify', {

@@ -25,9 +25,9 @@ const loadUglify = () => ({
 })
 
 export default {
-  input: `./${file}/index.ts`,
+  input: `./src/entry.${file}.ts`,
   output: {
-    file: `./dist/${file}.js`,
+    file: `./dist/bundle.${file}.js`,
     format: file === 'client' ? 'iife' : 'esm',
   },
   plugins: [

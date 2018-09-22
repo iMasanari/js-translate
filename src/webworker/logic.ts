@@ -1,5 +1,5 @@
 import { SourceMapConsumer, Position } from 'source-map'
-import { PositionPayload } from '.'
+import { PositionPayload } from './'
 
 // @ts-ignore
 SourceMapConsumer.initialize({ 'lib/mappings.wasm': 'mappings.wasm' })
