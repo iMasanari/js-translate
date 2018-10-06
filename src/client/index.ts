@@ -2,8 +2,10 @@ import createOverlayText from './createOverlayText'
 import createErrorText from './createErrorText'
 import { createWorkPromise } from './createWorkPromise'
 
+const $inputWrapper = document.getElementById('input-wrapper')!
 const $inputOverlay = document.getElementById('input-overlay')!
 const $inputTextarea = document.getElementById('input-textarea') as HTMLTextAreaElement
+const $outputWrapper = document.getElementById('output-wrapper')!
 const $outputOverlay = document.getElementById('output-overlay')!
 const $outputTextarea = document.getElementById('output-textarea') as HTMLTextAreaElement
 
@@ -65,12 +67,27 @@ const getSelectionPosition = ($textarea: HTMLTextAreaElement) => {
   return { line, column }
 }
 
+const lineHight = 16
+
 $inputTextarea.addEventListener('click', async () => {
   const selectionPosition = getSelectionPosition($inputTextarea)
   const { original, generated } = await work('positionFromInput', selectionPosition)
 
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value, original)
   $outputOverlay.innerHTML = createOverlayText($outputTextarea.value, generated)
+
+  const $highlight = $outputOverlay.getElementsByClassName('highlight')[0]
+
+  if ($highlight) {
+    const scrollTop = $highlight.getBoundingClientRect().top - $outputOverlay.getBoundingClientRect().top
+    const clientHeight = $outputWrapper.clientHeight
+    const top = $outputWrapper.scrollTop
+    const bottom = top + clientHeight - lineHight
+
+    if (scrollTop < top || bottom < scrollTop) {
+      $outputWrapper.scrollTop = scrollTop - clientHeight * 0.3
+    }
+  }
 })
 
 $outputTextarea.addEventListener('click', async () => {
@@ -79,4 +96,17 @@ $outputTextarea.addEventListener('click', async () => {
 
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value, original)
   $outputOverlay.innerHTML = createOverlayText($outputTextarea.value, generated)
+
+  const $highlight = $inputOverlay.getElementsByClassName('highlight')[0]
+
+  if ($highlight) {
+    const scrollTop = $highlight.getBoundingClientRect().top - $inputOverlay.getBoundingClientRect().top
+    const clientHeight = $inputWrapper.clientHeight
+    const top = $inputWrapper.scrollTop
+    const bottom = top + clientHeight - lineHight
+
+    if (scrollTop < top || bottom < scrollTop) {
+      $inputWrapper.scrollTop = scrollTop - clientHeight * 0.3
+    }
+  }
 })
