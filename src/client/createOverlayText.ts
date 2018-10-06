@@ -1,4 +1,4 @@
-import { NullablePosition } from 'source-map'
+import { Position } from 'source-map'
 
 const findTokenIndex = (str: string) => {
   const char = str[0]
@@ -26,7 +26,7 @@ const escapeLookup = (match: string) =>
 const escapeHtml = (value: string) =>
   value.replace(escapeRegExp, escapeLookup)
 
-export default (code: string, pos?: NullablePosition) => {
+export default (code: string, pos?: Position) => {
   if (!pos || pos.column == null || pos.line == null) {
     return escapeHtml(code) + '\n|'
   }

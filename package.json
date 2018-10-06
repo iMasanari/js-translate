@@ -8,9 +8,7 @@
     "build:rollup": "npm run build:rollup:client && npm run build:rollup:webworker",
     "build:rollup:client": "rollup -c --environment BUILD:client",
     "build:rollup:webworker": "rollup -c --environment BUILD:webworker",
-    "build:cp": "npm run build:cp:static && npm run build:cp:wasm",
-    "build:cp:static": "cp -r static/ dist/",
-    "build:cp:wasm": "cp node_modules/source-map/lib/mappings.wasm dist/mappings.wasm",
+    "build:cp": "cp -r static/ dist/",
     "build-puroduction": "NODE_ENV=puroduction npm run build:rollup && npm run build:cp",
     "clean": "rm dist/*"
   },
@@ -18,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "source-map": "^0.7.3",
+    "source-map": "^0.6.1",
     "uglify-es": "^3.3.9"
   },
   "devDependencies": {

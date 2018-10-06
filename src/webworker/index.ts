@@ -1,18 +1,18 @@
 import { minify, MinifyOptions } from 'uglify-es'
+import { SourceMapConsumer } from 'source-map'
 import { positionFromOutputLogic, positionFromInputLogic } from './logic'
 
-let sourceMap: string
+let sourceMapCustomer: SourceMapConsumer | null
 
 export interface MinifyPayload {
   code: string
   options: MinifyOptions
-
 }
 
 const minifyAction = (payload: MinifyPayload) => {
   const { code, error, map } = minify(payload.code, payload.options)
 
-  sourceMap = map
+  sourceMapCustomer = error ? null : new SourceMapConsumer(map as any)
 
   return { code, error }
 }
@@ -25,15 +25,15 @@ export interface PositionPayload {
 const emptyPositions = { original: {}, generated: {} }
 
 const positionFromInputAction = (payload: PositionPayload) => {
-  if (!sourceMap) return emptyPositions
+  if (!sourceMapCustomer) return emptyPositions
 
-  return positionFromInputLogic(sourceMap, payload)
+  return positionFromInputLogic(sourceMapCustomer, payload)
 }
 
 const positionFromOutputAction = (payload: PositionPayload) => {
-  if (!sourceMap) return emptyPositions
+  if (!sourceMapCustomer) return emptyPositions
 
-  return positionFromOutputLogic(sourceMap, payload)
+  return positionFromOutputLogic(sourceMapCustomer, payload)
 }
 
 const actions = {
@@ -42,9 +42,9 @@ const actions = {
   positionFromOutput: positionFromOutputAction,
 }
 
-addEventListener('message', async ({ data }) => {
+addEventListener('message', ({ data }) => {
   const action = (actions as any)[data.type]
-  const payload = await action(data.payload)
+  const payload = action(data.payload)
 
   postMessage({
     key: data.key,

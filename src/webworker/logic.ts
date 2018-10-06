@@ -1,25 +1,18 @@
-import { SourceMapConsumer, Position } from 'source-map'
+import { SourceMapConsumer, RawSourceMap } from 'source-map'
 import { PositionPayload } from './'
 
-// @ts-ignore
-SourceMapConsumer.initialize({ 'lib/mappings.wasm': 'mappings.wasm' })
-
-export const positionFromInputLogic = async (sourceMap: string, payload: PositionPayload) => {
-  const consumer = await new SourceMapConsumer(sourceMap)
-
+export const positionFromInputLogic = (consumer: SourceMapConsumer, position: PositionPayload) => {
   const { line, column } = consumer.generatedPositionFor({
     source: '0',
-    line: payload.line,
-    column: payload.column,
+    line: position.line,
+    column: position.column,
   })
 
   const generated = { line, column }
 
   const originalPosition = line != null
-    ? consumer.originalPositionFor(generated as Position)
+    ? consumer.originalPositionFor(generated)
     : { line: null, column: null }
-
-  consumer.destroy()
 
   return {
     original: {
@@ -31,24 +24,17 @@ export const positionFromInputLogic = async (sourceMap: string, payload: Positio
 }
 
 
-export const positionFromOutputLogic = async (sourceMap: string, payload: PositionPayload) => {
-  const consumer = await new SourceMapConsumer(sourceMap)
-
-  const { line, column } = consumer.originalPositionFor({
-    line: payload.line,
-    column: payload.column,
-  })
+export const positionFromOutputLogic = (consumer: SourceMapConsumer, position: PositionPayload) => {
+  const { line, column } = consumer.originalPositionFor(position)
 
   const generatedPosition = line != null
-    ? consumer.generatedPositionFor({ source: '0', line, column: column! })
+    ? consumer.generatedPositionFor({ source: '0', line, column })
     : { line: null, column: null }
-
-  consumer.destroy()
 
   return {
     original: {
       line,
-      column
+      column,
     },
     generated: {
       line: generatedPosition.line,

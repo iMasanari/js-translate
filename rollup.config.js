@@ -1,7 +1,6 @@
 import typescript from 'rollup-plugin-typescript2'
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
-import replace from 'rollup-plugin-replace'
 import uglify from 'rollup-plugin-uglify-es'
 import UglifyES from 'uglify-es'
 import { readFileSync } from 'fs'
@@ -31,7 +30,6 @@ export default {
     format: file === 'client' ? 'iife' : 'esm',
   },
   plugins: [
-    replace({ 'typeof fetch': JSON.stringify('function') }),
     loadUglify(),
     typescript(),
     nodeResolve(),
