@@ -5,10 +5,10 @@ const findTokenIndex = (str: string) => {
   const isStringOrRegExpLiteral = char === `'` || char === `"` || char === '`' || char === '/'
 
   const index = isStringOrRegExpLiteral
-    ? str.indexOf(char, 1) + 1
-    : str.search(/[^a-zA-Z0-9$_]/)
+    ? str.indexOf(char, 1) + 1 || str.length
+    : str.search(/[^a-zA-Z0-9$_]|$/) || 1
 
-  return index > 0 ? index : str.length
+  return index
 }
 
 const escapeRegExp = /["&'<>]/g
