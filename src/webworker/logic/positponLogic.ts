@@ -1,5 +1,5 @@
-import { SourceMapConsumer, RawSourceMap } from 'source-map'
-import { PositionPayload } from './'
+import { SourceMapConsumer } from 'source-map'
+import { PositionPayload } from '..'
 
 export const positionFromInputLogic = (consumer: SourceMapConsumer, position: PositionPayload) => {
   const { line, column } = consumer.generatedPositionFor({

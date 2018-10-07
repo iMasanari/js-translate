@@ -1,20 +1,55 @@
 import { minify, MinifyOptions } from 'uglify-es'
 import { SourceMapConsumer } from 'source-map'
-import { positionFromOutputLogic, positionFromInputLogic } from './logic'
+// @ts-ignore
+import merge from 'merge-source-map'
+import { transform } from './logic/babelLogic'
+import { positionFromOutputLogic, positionFromInputLogic } from './logic/positponLogic'
+import createErrorText from './createErrorText'
 
 let sourceMapCustomer: SourceMapConsumer | null
 
-export interface MinifyPayload {
+export interface TranspilePayload {
   code: string
+  useBabel: boolean
   options: MinifyOptions
 }
 
-const minifyAction = (payload: MinifyPayload) => {
-  const { code, error, map } = minify(payload.code, payload.options)
+const transpileAction = (payload: TranspilePayload) => {
+  let result = { code: payload.code } as {
+    code: string
+    error: any
+    map: any
+  }
 
-  sourceMapCustomer = error ? null : new SourceMapConsumer(map as any)
+  if (payload.useBabel) {
+    result = transform(payload.code, {
+      presets: [
+        'es2015-no-commonjs',
+        ['stage-2', { decoratorsLegacy: true }],
+      ],
+      plugins: [
+        'proposal-object-rest-spread',
+      ],
+      sourceMap: true,
+      filename: '0',
+    })
 
-  return { code, error }
+    if (result.error) {
+      return { error: result.error }
+    }
+  }
+
+  const { code, error, map } = minify(result.code, payload.options)
+
+  if (error) {
+    return { error: createErrorText(error, result.code) }
+  }
+
+  sourceMapCustomer = !error
+    ? new SourceMapConsumer(result.map ? merge(result.map, map) : map)
+    : null
+
+  return { code }
 }
 
 export interface PositionPayload {
@@ -37,7 +72,7 @@ const positionFromOutputAction = (payload: PositionPayload) => {
 }
 
 const actions = {
-  minify: minifyAction,
+  minify: transpileAction,
   positionFromInput: positionFromInputAction,
   positionFromOutput: positionFromOutputAction,
 }

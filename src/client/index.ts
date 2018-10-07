@@ -1,5 +1,4 @@
 import createOverlayText from './createOverlayText'
-import createErrorText from './createErrorText'
 import { createWorkPromise } from './createWorkPromise'
 
 const $inputWrapper = document.getElementById('input-wrapper')!
@@ -13,12 +12,14 @@ const $compress = document.getElementById('compress') as HTMLInputElement
 const $mangle = document.getElementById('mangle') as HTMLInputElement
 const $toplevel = document.getElementById('toplevel') as HTMLInputElement
 const $beautify = document.getElementById('beautify') as HTMLInputElement
+const $babel = document.getElementById('babel') as HTMLInputElement
 
 const work = createWorkPromise<any>(new Worker('./bundle.webworker.js'))
 
-const doMinify = async () => {
+const doTranspile = async () => {
   const result = await work('minify', {
     code: $inputTextarea.value,
+    useBabel: $babel.checked,
     options: {
       compress: $compress.checked,
       mangle: $mangle.checked,
@@ -30,7 +31,7 @@ const doMinify = async () => {
     }
   })
 
-  const code = result.error ? createErrorText(result.error, $inputTextarea.value) : result.code
+  const code = result.error || result.code
   $outputTextarea.value = code
   $outputOverlay.innerHTML = createOverlayText(code)
 
@@ -45,13 +46,14 @@ $inputTextarea.addEventListener('input', () => {
   $inputTextarea.style.height = $inputOverlay.clientHeight + 'px'
 
   clearTimeout(inputTimer)
-  inputTimer = setTimeout(doMinify, 500)
+  inputTimer = setTimeout(doTranspile, 500)
 })
 
-$compress.addEventListener('click', doMinify)
-$mangle.addEventListener('click', doMinify)
-$toplevel.addEventListener('click', doMinify)
-$beautify.addEventListener('click', doMinify)
+$compress.addEventListener('click', doTranspile)
+$mangle.addEventListener('click', doTranspile)
+$toplevel.addEventListener('click', doTranspile)
+$beautify.addEventListener('click', doTranspile)
+$babel.addEventListener('click', doTranspile)
 
 window.addEventListener('resize', () => {
   $inputTextarea.style.height = $inputOverlay.clientHeight + 'px'
