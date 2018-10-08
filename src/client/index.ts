@@ -1,4 +1,5 @@
 import createOverlayText from './createOverlayText'
+import { Position } from 'source-map'
 import { createWorkPromise } from './createWorkPromise'
 
 const $inputWrapper = document.getElementById('input-wrapper')!
@@ -39,21 +40,52 @@ const doTranspile = async () => {
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value)
 }
 
+let originalPosition: Position | null
+
+const changeOption = async () => {
+  await doTranspile()
+
+  if (!originalPosition) return
+
+  const { original, generated } = await work('positionFromInput', originalPosition)
+
+  $inputOverlay.innerHTML = createOverlayText($inputTextarea.value, original)
+  $outputOverlay.innerHTML = createOverlayText($outputTextarea.value, generated)
+
+  const $highlight = $outputOverlay.getElementsByClassName('highlight')[0]
+
+  if ($highlight) {
+    const scrollTop = $highlight.getBoundingClientRect().top - $outputOverlay.getBoundingClientRect().top
+    const clientHeight = $outputWrapper.clientHeight
+    const top = $outputWrapper.scrollTop
+    const bottom = top + clientHeight - lineHight
+
+    if (scrollTop < top || bottom < scrollTop) {
+      $outputWrapper.scrollTop = scrollTop - clientHeight * 0.3
+    }
+  }
+}
+
 let inputTimer: NodeJS.Timer
 
 $inputTextarea.addEventListener('input', () => {
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value)
   $inputTextarea.style.height = $inputOverlay.clientHeight + 'px'
+  originalPosition = null
 
   clearTimeout(inputTimer)
   inputTimer = setTimeout(doTranspile, 500)
 })
 
-$compress.addEventListener('click', doTranspile)
-$mangle.addEventListener('click', doTranspile)
-$toplevel.addEventListener('click', doTranspile)
-$beautify.addEventListener('click', doTranspile)
-$babel.addEventListener('click', doTranspile)
+$compress.addEventListener('click', changeOption)
+$mangle.addEventListener('click', changeOption)
+$toplevel.addEventListener('click', changeOption)
+$beautify.addEventListener('click', changeOption)
+$babel.addEventListener('click', changeOption)
+
+$inputWrapper.addEventListener('scroll', () => {
+  originalPosition = null
+})
 
 window.addEventListener('resize', () => {
   $inputTextarea.style.height = $inputOverlay.clientHeight + 'px'
@@ -75,6 +107,8 @@ $inputTextarea.addEventListener('click', async () => {
   const selectionPosition = getSelectionPosition($inputTextarea)
   const { original, generated } = await work('positionFromInput', selectionPosition)
 
+  originalPosition = original
+
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value, original)
   $outputOverlay.innerHTML = createOverlayText($outputTextarea.value, generated)
 
@@ -95,6 +129,8 @@ $inputTextarea.addEventListener('click', async () => {
 $outputTextarea.addEventListener('click', async () => {
   const selectionPosition = getSelectionPosition($outputTextarea)
   const { original, generated } = await work('positionFromOutput', selectionPosition)
+
+  originalPosition = original
 
   $inputOverlay.innerHTML = createOverlayText($inputTextarea.value, original)
   $outputOverlay.innerHTML = createOverlayText($outputTextarea.value, generated)
