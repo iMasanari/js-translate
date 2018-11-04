@@ -1,4 +1,4 @@
-import { minify, MinifyOptions } from 'uglify-es'
+import { minify, MinifyOptions } from 'terser'
 import { SourceMapConsumer } from 'source-map'
 // @ts-ignore
 import merge from 'merge-source-map'

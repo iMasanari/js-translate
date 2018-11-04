@@ -1,8 +1,8 @@
 import typescript from 'rollup-plugin-typescript2'
 import nodeResolve from 'rollup-plugin-node-resolve'
 import commonjs from 'rollup-plugin-commonjs'
-import uglify from 'rollup-plugin-uglify-es'
-import UglifyES from 'uglify-es'
+import { terser } from 'rollup-plugin-terser'
+import terser_ from 'terser'
 import { readFileSync } from 'fs'
 
 const file = process.env.BUILD || 'client'
@@ -10,13 +10,13 @@ const isProduction = process.env.NODE_ENV === 'puroduction'
 
 const loadUglify = () => ({
   resolveId(id) {
-    if (id === 'uglify-es') return './uglify-es'
+    if (id === 'terser') return './terser'
   },
   load(id) {
-    if (id !== './uglify-es') return
+    if (id !== './terser') return
 
     return `import * as MOZ_SourceMap from 'source-map';\n`
-      + UglifyES.FILES
+      + terser_.FILES
         .filter((file) => !/\/(exports|mozilla-ast)\.js$/.test(file))
         .map((file) => readFileSync(file, 'utf-8'))
         .join('\n') + '\nexport { Dictionary, TreeWalker, TreeTransformer, minify, push_uniq as _push_uniq }'
@@ -34,7 +34,7 @@ export default {
     typescript(),
     nodeResolve(),
     commonjs(),
-    isProduction && uglify({
+    isProduction && terser({
       toplevel: true,
     })
   ],
