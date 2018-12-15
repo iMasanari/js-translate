@@ -5,9 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run build:rollup && npm run build:cp",
-    "build:rollup": "npm run build:rollup:client && npm run build:rollup:webworker",
-    "build:rollup:client": "rollup -c --environment BUILD:client",
-    "build:rollup:webworker": "rollup -c --environment BUILD:webworker",
+    "build:rollup": "rollup -c",
     "build:cp": "cp -r static/ dist/",
     "build-puroduction": "NODE_ENV=puroduction npm run build:rollup && npm run build:cp",
     "clean": "rm dist/*"
@@ -24,10 +22,8 @@
   "devDependencies": {
     "@types/terser": "^3.8.0",
     "rollup": "^0.66.6",
-    "rollup-plugin-alias": "^1.4.0",
     "rollup-plugin-commonjs": "^9.1.6",
     "rollup-plugin-node-resolve": "^3.4.0",
-    "rollup-plugin-replace": "^2.0.0",
     "rollup-plugin-terser": "^3.0.0",
     "rollup-plugin-typescript2": "^0.17.0",
     "typescript": "^3.0.3"
